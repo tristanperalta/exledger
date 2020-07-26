@@ -21,7 +21,12 @@ defmodule ExLedger.Ledger do
 
   def sum(transactions) do
     transactions
-    |> Enum.map(&(&1.amount.quantity))
+    |> Enum.group_by(fn(txn) -> txn.amount.currency end)
+    |> Enum.map(fn({_c, txns}) ->
+      txns
+      |> Enum.map(&(&1.amount.quantity))
+      |> Enum.sum()
+    end)
     |> Enum.sum()
   end
 end
