@@ -8,9 +8,12 @@ defmodule Exledger.EntryTest do
     txn3 = build_transaction("assets", {1, :PHP})
     txn4 = build_transaction("expenses", {-1, :PHP})
 
-    entry = Entry.new(
-      date: DateTime.utc_now(),
-      transactions: [txn1, txn2, txn3, txn4])
+    entry =
+      Entry.new(
+        date: DateTime.utc_now(),
+        transactions: [txn1, txn2, txn3, txn4]
+      )
+
     assert Entry.balance(entry) == [USD: 0, PHP: 0]
   end
 end

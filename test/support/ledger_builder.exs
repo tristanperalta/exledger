@@ -1,5 +1,4 @@
 defmodule ExLedger.LedgerBuilder do
-
   defmacro __using__(_options) do
     quote do
       alias ExLedger.{Ledger, Account, Amount, Transaction, Entry}
@@ -30,9 +29,13 @@ defmodule ExLedger.LedgerBuilder do
   end
 
   def transaction_fields(overrides) do
-    Keyword.merge([
-      account: build_account(),
-      amount: build_amount()], overrides)
+    Keyword.merge(
+      [
+        account: build_account(),
+        amount: build_amount()
+      ],
+      overrides
+    )
   end
 
   def build_transaction(account_name, {qty, cur} = _amount_in_tuple) do

@@ -1,4 +1,2 @@
 defmodule Exledger do
-
-
 end
