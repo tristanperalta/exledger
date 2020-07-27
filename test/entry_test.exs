@@ -1,8 +1,8 @@
-defmodule ExledgerTest do
+defmodule Exledger.EntryTest do
   use ExUnit.Case
   use ExLedger.LedgerBuilder
 
-  test "Ledger.balance/1" do
+  test "Entry.balance/1" do
     txn1 = build_transaction("assets", {1, :USD})
     txn2 = build_transaction("expenses", {-1, :USD})
     txn3 = build_transaction("assets", {1, :PHP})
@@ -11,9 +11,6 @@ defmodule ExledgerTest do
     entry = Entry.new(
       date: DateTime.utc_now(),
       transactions: [txn1, txn2, txn3, txn4])
-
-    ledger = Ledger.new(entries: [entry])
-
-    assert Ledger.balance(ledger) == 0
+    assert Entry.balance(entry) == [USD: 0, PHP: 0]
   end
 end

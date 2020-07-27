@@ -20,4 +20,14 @@ defmodule ExLedger.Entry do
     |> Enum.map(&(&1.transactions))
     |> List.flatten()
   end
+
+  def balance(%{transactions: transactions}) do
+    transactions
+    |> Enum.group_by(fn(txn) -> txn.amount.currency end)
+    |> Enum.reduce([], fn({currency, txns} = _entry, acc) ->
+      Keyword.put(acc, currency, txns
+        |> Enum.map(&(&1.amount.quantity))
+        |> Enum.sum())
+    end)
+  end
 end

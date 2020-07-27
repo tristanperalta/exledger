@@ -15,18 +15,13 @@ defmodule ExLedger.Ledger do
   @spec balance(__MODULE__.t()) :: integer()
   def balance(%{entries: entries} = _ledger) do
     entries
-    |> Entry.transactions()
-    |> sum()
-  end
-
-  def sum(transactions) do
-    transactions
-    |> Enum.group_by(fn(txn) -> txn.amount.currency end)
-    |> Enum.map(fn({_c, txns}) ->
-      txns
-      |> Enum.map(&(&1.amount.quantity))
+    |> Enum.reduce(0, fn(totals, acc) ->
+      totals = totals
+      |> Entry.balance()
+      |> Keyword.values()
       |> Enum.sum()
+
+      acc + totals
     end)
-    |> Enum.sum()
   end
 end
