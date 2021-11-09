@@ -6,7 +6,7 @@ defmodule ExLedger.LedgerBuilder do
     end
   end
 
-  alias ExLedger.{Ledger, Account, Amount, Transaction, Entry}
+  alias ExLedger.{Account, Amount, Transaction}
 
   def account_fields(overrides) do
     Keyword.merge([name: "assets"], overrides)

@@ -9,4 +9,8 @@ defmodule ExLedger.Amount do
   def new(attrs) do
     struct!(%__MODULE__{}, attrs)
   end
+
+  def new(qty, currency) do
+    new(%{quantity: qty, currency: currency})
+  end
 end

@@ -1,10 +1,10 @@
 defmodule ExLedger.Ledger do
-  defstruct entries: []
+  defstruct transactions: []
 
-  alias ExLedger.Entry
+  alias ExLedger.Transaction
 
   @type t :: %__MODULE__{
-          entries: [Entry.t()]
+          transactions: [Transaction.t()]
         }
 
   def new(attrs) do
@@ -12,12 +12,12 @@ defmodule ExLedger.Ledger do
   end
 
   @spec balance(__MODULE__.t()) :: integer()
-  def balance(%{entries: entries} = _ledger) do
-    entries
+  def balance(%{transactions: transactions} = _ledger) do
+    transactions
     |> Enum.reduce(0, fn totals, acc ->
       totals =
         totals
-        |> Entry.balance()
+        |> Transaction.balance()
         |> Keyword.values()
         |> Enum.sum()
 
