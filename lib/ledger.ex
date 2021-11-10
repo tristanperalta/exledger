@@ -11,17 +11,11 @@ defmodule ExLedger.Ledger do
     struct!(%__MODULE__{}, attrs)
   end
 
-  @spec balance(__MODULE__.t()) :: integer()
-  def balance(%{transactions: transactions} = _ledger) do
-    transactions
-    |> Enum.reduce(0, fn totals, acc ->
-      totals =
-        totals
-        |> Transaction.balance()
-        |> Keyword.values()
-        |> Enum.sum()
-
-      acc + totals
+  @spec is_balance?(__MODULE__.t()) :: bool()
+  def is_balance?(%{transactions: transactions} = _ledger) do
+    Enum.flat_map(transactions, fn txn ->
+      Keyword.values(txn.balances)
     end)
+    |> Enum.all?(&(&1 == 0))
   end
 end
