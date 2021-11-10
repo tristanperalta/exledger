@@ -1,5 +1,5 @@
 defmodule ExLedger.Transaction do
-  defstruct [:date, :status, :description, entries: []]
+  defstruct [:date, :status, :description, balances: [], entries: []]
 
   alias ExLedger.Entry
 
@@ -7,6 +7,7 @@ defmodule ExLedger.Transaction do
           date: DateTime.t(),
           status: bool(),
           description: String.t(),
+          balances: keyword(),
           entries: [Entry.t()]
         }
 
@@ -18,26 +19,22 @@ defmodule ExLedger.Transaction do
   end
 
   def add_entry(%{entries: entries} = txn, account, amount) do
-    Map.put(txn, :entries, [Entry.new(account, amount) | entries])
+    txn
+    |> Map.put(:entries, [Entry.new(account, amount) | entries])
+    |> compute_balance(amount)
+  end
+
+  def update_balance(balances, {qty, curr}) do
+    Keyword.update(balances, curr, qty, fn e -> e + qty end)
+  end
+
+  def compute_balance(txn, amount) do
+    Map.put(txn, :balances, update_balance(txn.balances, amount))
   end
 
   def transactions(entries) do
     entries
     |> Enum.map(& &1.entries)
     |> List.flatten()
-  end
-
-  def balance(%{entries: entries}) do
-    entries
-    |> Enum.group_by(fn entry -> entry.amount.currency end)
-    |> Enum.reduce([], fn {currency, txns} = _entry, acc ->
-      Keyword.put(
-        acc,
-        currency,
-        txns
-        |> Enum.map(& &1.amount.quantity)
-        |> Enum.sum()
-      )
-    end)
   end
 end
