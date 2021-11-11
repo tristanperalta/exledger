@@ -2,7 +2,7 @@ defmodule ExledgerTest do
   use ExUnit.Case
   use ExLedger.LedgerBuilder
 
-  test "Ledger.is_balance?/1" do
+  test "Ledger.is_balanced?/1" do
     transaction =
       Transaction.new("test transaction")
       |> Transaction.add_entry("assets", {1, :USD})
@@ -12,10 +12,10 @@ defmodule ExledgerTest do
 
     ledger = Ledger.new(transactions: [transaction])
 
-    assert Ledger.is_balance?(ledger)
+    assert Ledger.is_balanced?(ledger)
   end
 
-  test "Ledger.is_balance?/1 imbalance" do
+  test "Ledger.is_balanced?/1 imbalance" do
     transaction =
       Transaction.new("test transaction")
       |> Transaction.add_entry("assets", {1, :USD})
@@ -24,6 +24,6 @@ defmodule ExledgerTest do
 
     ledger = Ledger.new(transactions: [transaction])
 
-    assert false == Ledger.is_balance?(ledger)
+    assert false == Ledger.is_balanced?(ledger)
   end
 end

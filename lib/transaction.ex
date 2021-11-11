@@ -32,6 +32,12 @@ defmodule ExLedger.Transaction do
     Map.put(txn, :balances, update_balance(txn.balances, amount))
   end
 
+  @spec is_balanced?(__MODULE__.t()) :: bool()
+  def is_balanced?(txn) do
+    Keyword.values(txn.balances)
+    |> Enum.all?(&(&1 == 0))
+  end
+
   def transactions(entries) do
     entries
     |> Enum.map(& &1.entries)
