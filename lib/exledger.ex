@@ -1,2 +1,2 @@
-defmodule Exledger do
+defmodule ExLedger do
 end

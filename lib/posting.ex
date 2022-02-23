@@ -1,4 +1,4 @@
-defmodule ExLedger.Entry do
+defmodule ExLedger.Posting do
   defstruct ~w[account amount]a
 
   alias ExLedger.{Account, Amount}

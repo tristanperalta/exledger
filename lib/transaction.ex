@@ -1,14 +1,12 @@
 defmodule ExLedger.Transaction do
-  defstruct [:date, :status, :description, balances: [], entries: []]
-
-  alias ExLedger.Entry
+  defstruct [:id, :description, :date, :status, postings: [], balances: %{}]
 
   @type t :: %__MODULE__{
           date: DateTime.t(),
-          status: bool(),
+          status: any(),
           description: String.t(),
-          balances: keyword(),
-          entries: [Entry.t()]
+          balances: map(),
+          postings: [Posting.t()]
         }
 
   def new(), do: new(%{})
@@ -18,29 +16,27 @@ defmodule ExLedger.Transaction do
     struct!(%__MODULE__{}, attrs)
   end
 
-  def add_entry(%{entries: entries} = txn, account, amount) do
-    txn
-    |> Map.put(:entries, [Entry.new(account, amount) | entries])
-    |> compute_balance(amount)
+  def add_entry(txn, account, amount) do
+    add_entry(txn, %ExLedger.Posting{account: account, amount: amount})
   end
 
-  def update_balance(balances, {qty, curr}) do
-    Keyword.update(balances, curr, qty, fn e -> e + qty end)
+  def add_entry(%{postings: postings} = txn, %ExLedger.Posting{amount: amount} = posting) do
+    txn
+    |> Map.put(:entries, [posting | postings])
+    |> compute_balance(amount)
   end
 
   def compute_balance(txn, amount) do
     Map.put(txn, :balances, update_balance(txn.balances, amount))
   end
 
-  @spec is_balanced?(__MODULE__.t()) :: bool()
-  def is_balanced?(txn) do
-    Keyword.values(txn.balances)
-    |> Enum.all?(&(&1 == 0))
+  defp update_balance(balances, {qty, curr}) do
+    Map.update(balances, curr, qty, fn e -> e + qty end)
   end
 
-  def transactions(entries) do
-    entries
-    |> Enum.map(& &1.entries)
-    |> List.flatten()
+  def balanced?(%{balances: balances}) do
+    balances
+    |> Map.values()
+    |> Enum.all?(&(&1 == 0))
   end
 end

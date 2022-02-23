@@ -1,4 +1,4 @@
-defmodule ExledgerTest do
+defmodule ExLedgerTest do
   use ExUnit.Case
   use ExLedger.LedgerBuilder
 

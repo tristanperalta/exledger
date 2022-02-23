@@ -13,7 +13,7 @@ defmodule ExLedger.Ledger do
 
   @spec is_balanced?(__MODULE__.t()) :: bool()
   def is_balanced?(%{transactions: transactions} = _ledger) do
-    Enum.map(transactions, &Transaction.is_balanced?/1)
+    Enum.map(transactions, &Transaction.balanced?/1)
     |> Enum.all?()
   end
 end
