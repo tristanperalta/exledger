@@ -1,4 +1,6 @@
 defmodule ExLedger.Transaction do
+  alias ExLedger.Posting
+
   defstruct [:id, :description, :date, :status, postings: [], balances: %{}]
 
   @type t :: %__MODULE__{
@@ -17,10 +19,10 @@ defmodule ExLedger.Transaction do
   end
 
   def add_entry(txn, account, amount) do
-    add_entry(txn, %ExLedger.Posting{account: account, amount: amount})
+    add_entry(txn, Posting.new(account, amount))
   end
 
-  def add_entry(%{postings: postings} = txn, %ExLedger.Posting{amount: amount} = posting) do
+  def add_entry(%{postings: postings} = txn, %Posting{amount: amount} = posting) do
     txn
     |> Map.put(:entries, [posting | postings])
     |> compute_balance(amount)
@@ -30,13 +32,13 @@ defmodule ExLedger.Transaction do
     Map.put(txn, :balances, update_balance(txn.balances, amount))
   end
 
-  defp update_balance(balances, {qty, curr}) do
-    Map.update(balances, curr, qty, fn e -> e + qty end)
+  defp update_balance(balances, %{currency: curr, number: num}) do
+    Map.update(balances, curr, num, fn e -> Decimal.add(e, num) end)
   end
 
   def balanced?(%{balances: balances}) do
     balances
     |> Map.values()
-    |> Enum.all?(&(&1 == 0))
+    |> Enum.all?(&(&1 == Decimal.new(0)))
   end
 end
